@@ -9,7 +9,7 @@ import (
 )
 
 // Handler is the HTTP handler for the API, handled by the lambda
-var Handler http.Handler = loggerMiddleware(http.HandlerFunc(handler), nil)
+var Handler http.HandlerFunc = loggerMiddleware(http.HandlerFunc(handler), nil).ServeHTTP
 
 func handler(w http.ResponseWriter, r *http.Request) {
 	db, err := getDatabase()
