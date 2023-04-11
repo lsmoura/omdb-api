@@ -1,4 +1,4 @@
-package handler
+package logging
 
 import (
 	"context"
@@ -13,12 +13,12 @@ type logCtxHolder struct {
 	logger *slog.Logger
 }
 
-func withLogger(ctx context.Context, logger *slog.Logger, args ...any) context.Context {
+func WithLogger(ctx context.Context, logger *slog.Logger, args ...any) context.Context {
 	v := &logCtxHolder{logger.With(args...)}
 	return context.WithValue(ctx, logCtxKey, v)
 }
 
-func loggerFromContext(ctx context.Context) *slog.Logger {
+func LoggerFromContext(ctx context.Context) *slog.Logger {
 	v, ok := ctx.Value(logCtxKey).(*logCtxHolder)
 	if !ok {
 		return nil
@@ -27,7 +27,7 @@ func loggerFromContext(ctx context.Context) *slog.Logger {
 	return v.logger
 }
 
-func loggerUpdateWith(ctx context.Context, args ...any) {
+func LoggerUpdateWith(ctx context.Context, args ...any) {
 	v, ok := ctx.Value(logCtxKey).(*logCtxHolder)
 	if !ok {
 		return

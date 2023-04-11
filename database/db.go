@@ -1,4 +1,4 @@
-package handler
+package database
 
 import (
 	"database/sql"
@@ -8,7 +8,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func getDatabase() (*sql.DB, error) {
+func DB() (*sql.DB, error) {
 	connURL := os.Getenv("DATABASE_URL")
 	if connURL == "" {
 		return nil, fmt.Errorf("DATABASE_URL not set")
@@ -29,7 +29,7 @@ type Movie struct {
 	Date     *string `json:"date" db:"date"`
 }
 
-func getMovies(db *sql.DB) ([]Movie, error) {
+func GetMovies(db *sql.DB) ([]Movie, error) {
 	rows, err := db.Query("SELECT id, name, parent_id, date FROM movies")
 	if err != nil {
 		return nil, fmt.Errorf("db.Query: %w", err)

@@ -1,4 +1,4 @@
-package handler
+package logging
 
 import (
 	"fmt"
@@ -24,7 +24,7 @@ func TestLoggerMiddleware(t *testing.T) {
 	require.NoError(t, err)
 
 	var recorder httptest.ResponseRecorder
-	loggerMiddleware(http.HandlerFunc(successHandler), logger).ServeHTTP(&recorder, req)
+	LoggerMiddleware(http.HandlerFunc(successHandler), logger).ServeHTTP(&recorder, req)
 
 	resp := buf.String()
 
@@ -60,7 +60,7 @@ func TestLoggerMiddlewarePanic(t *testing.T) {
 	require.NoError(t, err)
 
 	var recorder httptest.ResponseRecorder
-	panicWrapper(loggerMiddleware(http.HandlerFunc(panicHandler), logger)).ServeHTTP(&recorder, req)
+	panicWrapper(LoggerMiddleware(http.HandlerFunc(panicHandler), logger)).ServeHTTP(&recorder, req)
 
 	resp := buf.String()
 

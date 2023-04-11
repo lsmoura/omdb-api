@@ -1,4 +1,4 @@
-package handler
+package logging
 
 import (
 	"context"
@@ -56,9 +56,9 @@ func TestLoggingCtx(t *testing.T) {
 	logger := slog.New(slog.NewTextHandler(&buf)).With("foo", "bar")
 
 	ctx := context.Background()
-	ctx = withLogger(ctx, logger)
+	ctx = WithLogger(ctx, logger)
 
-	ctxLogger := loggerFromContext(ctx)
+	ctxLogger := LoggerFromContext(ctx)
 
 	ctxLogger.InfoCtx(ctx, "hello world")
 
@@ -74,14 +74,14 @@ func TestLoggingCtxUpdate(t *testing.T) {
 	logger := slog.New(slog.NewTextHandler(&buf))
 
 	ctx := context.Background()
-	ctx = withLogger(ctx, logger)
+	ctx = WithLogger(ctx, logger)
 
 	key := randomString(10)
 	value := randomString(10)
 
-	loggerUpdateWith(ctx, key, value)
+	LoggerUpdateWith(ctx, key, value)
 
-	ctxLogger := loggerFromContext(ctx)
+	ctxLogger := LoggerFromContext(ctx)
 
 	ctxLogger.InfoCtx(ctx, "hello world")
 

@@ -1,4 +1,4 @@
-package handler
+package logging
 
 import (
 	"golang.org/x/exp/slog"
@@ -42,7 +42,7 @@ func GetIP(r *http.Request) string {
 	return r.RemoteAddr
 }
 
-func loggerMiddleware(fn http.Handler, logger *slog.Logger) http.Handler {
+func LoggerMiddleware(fn http.Handler, logger *slog.Logger) http.Handler {
 	var baseLogger *slog.Logger
 	if logger == nil {
 		baseLogger = slog.New(slog.NewTextHandler(os.Stdout))
@@ -52,7 +52,7 @@ func loggerMiddleware(fn http.Handler, logger *slog.Logger) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
 
-		ctx := withLogger(
+		ctx := WithLogger(
 			r.Context(),
 			baseLogger,
 			"method", r.Method,
@@ -61,7 +61,7 @@ func loggerMiddleware(fn http.Handler, logger *slog.Logger) http.Handler {
 		)
 
 		if ref := r.Header.Get("Referer"); ref != "" {
-			loggerUpdateWith(ctx, "referer", ref)
+			LoggerUpdateWith(ctx, "referer", ref)
 		}
 
 		rw := &loggingResponseWriter{w, &responseData{}}
@@ -69,7 +69,7 @@ func loggerMiddleware(fn http.Handler, logger *slog.Logger) http.Handler {
 		defer func() {
 			// log panics
 			if err := recover(); err != nil {
-				loggerFromContext(ctx).ErrorCtx(
+				LoggerFromContext(ctx).ErrorCtx(
 					ctx,
 					"request panic",
 					"err", err,
@@ -81,7 +81,7 @@ func loggerMiddleware(fn http.Handler, logger *slog.Logger) http.Handler {
 			responseData := rw.responseData
 			duration := time.Since(start)
 
-			loggerFromContext(ctx).InfoCtx(
+			LoggerFromContext(ctx).InfoCtx(
 				ctx,
 				"request",
 				"status", responseData.status,

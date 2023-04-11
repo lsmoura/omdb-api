@@ -4,15 +4,17 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/lsmoura/omdb-api/database"
+	"github.com/lsmoura/omdb-api/logging"
 	"net/http"
 	"time"
 )
 
 // Handler is the HTTP handler for the API, handled by the lambda
-var Handler http.HandlerFunc = loggerMiddleware(http.HandlerFunc(handler), nil).ServeHTTP
+var Handler http.HandlerFunc = logging.LoggerMiddleware(http.HandlerFunc(handler), nil).ServeHTTP
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	db, err := getDatabase()
+	db, err := database.DB()
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(w, "Error: %s", err)
@@ -20,7 +22,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer db.Close()
 
-	movies, err := getMovies(db)
+	movies, err := database.GetMovies(db)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(w, "Error: %s", err)
@@ -37,7 +39,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Expires", time.Now().Add(time.Hour).Format(time.RFC1123))
 	if _, err := w.Write(buf.Bytes()); err != nil {
-		if logger := loggerFromContext(r.Context()); logger != nil {
+		if logger := logging.LoggerFromContext(r.Context()); logger != nil {
 			logger.Error("w.Write", "error", err)
 		}
 	}
