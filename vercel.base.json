@@ -3,6 +3,10 @@
     {
       "path": "/api/import-all-movies?auth=$AUTH_TOKEN",
       "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/import-movie-links?auth=$AUTH_TOKEN",
+      "schedule": "0 0 * * *"
     }
   ]
 }

@@ -47,3 +47,25 @@ func GetMovies(db *sql.DB) ([]Movie, error) {
 
 	return movies, nil
 }
+
+func GetMovieWithID(db *sql.DB, id int64) (*Movie, error) {
+	row := db.QueryRow("SELECT id, name, parent_id, date FROM movies WHERE id = $1", id)
+
+	var movie Movie
+	if err := row.Scan(&movie.ID, &movie.Name, &movie.ParentID, &movie.Date); err != nil {
+		return nil, fmt.Errorf("row.Scan: %w", err)
+	}
+
+	return &movie, nil
+}
+
+func GetMovieForIMDBID(db *sql.DB, imdbID string) (*Movie, error) {
+	row := db.QueryRow("SELECT movie_id FROM movie_links WHERE source = 'imdbmovie' AND key = $1", imdbID)
+
+	var movieID int64
+	if err := row.Scan(&movieID); err != nil {
+		return nil, fmt.Errorf("row.Scan: %w", err)
+	}
+
+	return GetMovieWithID(db, movieID)
+}
