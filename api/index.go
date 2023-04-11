@@ -10,8 +10,10 @@ import (
 	"time"
 )
 
-// Handler is the HTTP handler for the API, handled by the lambda
-var Handler http.HandlerFunc = logging.LoggerMiddleware(http.HandlerFunc(handler), nil).ServeHTTP
+// APIHandler is the HTTP handler for the API, handled by the lambda
+func APIHandler(w http.ResponseWriter, r *http.Request) {
+	logging.LoggerMiddleware(http.HandlerFunc(handler), nil).ServeHTTP(w, r)
+}
 
 func handler(w http.ResponseWriter, r *http.Request) {
 	db, err := database.DB()
