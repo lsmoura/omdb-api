@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/import-all-movies?auth=$AUTH_TOKEN",
+      "schedule": "0 0 * * *"
+    }
+  ]
+}
